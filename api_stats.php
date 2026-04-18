@@ -5,7 +5,7 @@ require_once 'config.php';
 
 $totali = (int)$pdo->query("SELECT COUNT(*) FROM candidature")->fetchColumn();
 $nuovi = (int)$pdo->query("SELECT COUNT(*) FROM candidature WHERE stato IN ('nuova','nuovo')")->fetchColumn();
-$oggi = (int)$pdo->query("SELECT COUNT(*) FROM candidature WHERE DATE(data_candidatura)=CURDATE()")->fetchColumn();
+$oggi = (int)$pdo->query("SELECT COUNT(*) FROM candidature WHERE DATE(created_at)=CURDATE()")->fetchColumn();
 $bonifico = (int)$pdo->query("SELECT COUNT(*) FROM candidature WHERE metodo_pagamento='bonifico'")->fetchColumn();
 $contrassegno = (int)$pdo->query("SELECT COUNT(*) FROM candidature WHERE metodo_pagamento='contrassegno'")->fetchColumn();
 $whatsapp = (int)$pdo->query("SELECT COUNT(*) FROM candidature WHERE note LIKE '%WhatsApp%'")->fetchColumn();
