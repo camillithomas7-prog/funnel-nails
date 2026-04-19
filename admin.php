@@ -837,7 +837,7 @@ $pdf_files = glob($upload_dir_log . '*.pdf');
       </div>
       <?php foreach (($recs_by_lead[$c['id']] ?? []) as $rec): ?>
         <div class="rec-item" id="rec-<?=$rec['id']?>">
-          <audio controls preload="none" src="uploads/calls/<?=htmlspecialchars($rec['filename'])?>"></audio>
+          <audio controls preload="metadata" src="uploads/calls/<?=htmlspecialchars($rec['filename'])?>"></audio>
           <div class="rec-item__meta"><?=date('d/m H:i', strtotime($rec['created_at']))?> · <?=gmdate('i:s', (int)$rec['durata'])?></div>
           <a class="rec-item__dl" href="uploads/calls/<?=htmlspecialchars($rec['filename'])?>" download title="Scarica">⬇</a>
           <button type="button" class="rec-item__del" onclick="delRec(<?=$rec['id']?>)" title="Elimina">🗑</button>
@@ -1010,6 +1010,18 @@ async function delRec(recId){
 }
 window.addEventListener('beforeunload',function(e){
   if(__rec){e.preventDefault();e.returnValue='Registrazione in corso. Uscire comunque?';return e.returnValue}
+});
+function fixWebmDuration(audio){
+  if (audio._durFixed) return; audio._durFixed = true;
+  if (audio.readyState >= 1 && !isFinite(audio.duration)) {
+    var handler = function(){ audio.removeEventListener('timeupdate', handler); audio.currentTime = 0; };
+    audio.addEventListener('timeupdate', handler);
+    try { audio.currentTime = 1e101; } catch(e) {}
+  }
+}
+document.querySelectorAll('.rec-item audio').forEach(function(a){
+  a.addEventListener('loadedmetadata', function(){ fixWebmDuration(a); });
+  if (a.readyState >= 1) fixWebmDuration(a);
 });
 </script>
 </body></html>
