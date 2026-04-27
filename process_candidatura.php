@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'lib.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.html');
@@ -23,8 +24,9 @@ if (empty($nome) || empty($cognome) || empty($telefono) || empty($citta) || empt
 }
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO candidature (nome, cognome, telefono, email, citta, provincia, metodo_pagamento, indirizzo, cap, scala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$nome, $cognome, $telefono, $email, $citta, $provincia, $metodo, $indirizzo, $cap, $scala]);
+    $auto_assigned = pickOperator($pdo);
+    $stmt = $pdo->prepare("INSERT INTO candidature (nome, cognome, telefono, email, citta, provincia, metodo_pagamento, indirizzo, cap, scala, assegnato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$nome, $cognome, $telefono, $email, $citta, $provincia, $metodo, $indirizzo, $cap, $scala, $auto_assigned ?? '']);
     $id = $pdo->lastInsertId();
     header("Location: grazie.php?id=$id");
 } catch (PDOException $e) {
